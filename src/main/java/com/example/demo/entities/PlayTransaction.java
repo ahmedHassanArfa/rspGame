@@ -4,6 +4,7 @@ import com.example.demo.models.PlayTransactionType;
 import com.example.demo.models.WinningStatus;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import java.util.Date;
@@ -12,6 +13,7 @@ import java.util.Date;
 public class PlayTransaction {
 
     @Id
+    @GeneratedValue
     private Long id;
     private Date date;
     private PlayTransactionType userPlayType;

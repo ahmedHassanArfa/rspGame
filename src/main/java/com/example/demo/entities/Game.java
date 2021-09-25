@@ -3,6 +3,7 @@ package com.example.demo.entities;
 import com.example.demo.models.GameStatus;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import java.util.Date;
 
@@ -10,6 +11,7 @@ import java.util.Date;
 public class Game {
 
     @Id
+    @GeneratedValue
     private Long id;
     private String playerName;
     private Date date;

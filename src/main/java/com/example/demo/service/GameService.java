@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
@@ -46,7 +47,7 @@ public class GameService {
         playTransaction.setGame(game);
         // generate random play to computer
         Random random = new Random();
-        int randomInt = random.nextInt(3) + 1;
+        int randomInt = getRandomNumber(0, 2);
         PlayTransactionType computerPlay = PlayTransactionType.values()[randomInt];
         playTransaction.setComputerPlayType(computerPlay);
         // decide the winner
@@ -62,14 +63,14 @@ public class GameService {
         gameRepository.updateStatusById(GameStatus.FINISHED, gameId);
         GameResult gameResult = new GameResult();
         // get total result of transactions for user
-        Map<String,Long> resultMap = playTransactionRepository.getFinalResultByGameId(gameId);
-        resultMap.forEach((s, count) -> {
-            if (WinningStatus.WIN.toString().equals(s)) {
-                gameResult.setWinCount(count.intValue());
-            } else if (WinningStatus.FAIL.toString().equals(s)) {
-                gameResult.setFailCount(count.intValue());
-            } else if (WinningStatus.EQUAL.toString().equals(s)) {
-                gameResult.setEqualsCount(count.intValue());
+        List<Object[]> resultMap = playTransactionRepository.getFinalResultByGameId(gameId);
+        resultMap.forEach((object) -> {
+            if (WinningStatus.WIN.toString().equals(object[0]+"")) {
+                gameResult.setWinCount(((Long) object[1]).intValue());
+            } else if (WinningStatus.FAIL.toString().equals(object[0]+"")) {
+                gameResult.setFailCount(((Long) object[1]).intValue());
+            } else if (WinningStatus.EQUAL.toString().equals(object[0]+"")) {
+                gameResult.setEqualsCount(((Long) object[1]).intValue());
             }
             gameResult.setTransactionsCount(gameResult.getWinCount() + gameResult.getFailCount() + gameResult.getEqualsCount());
             if(gameResult.getWinCount() > gameResult.getFailCount()) {
@@ -104,6 +105,10 @@ public class GameService {
             }
         }
         return null;
+    }
+
+    public int getRandomNumber(int min, int max) {
+        return (int) ((Math.random() * (max - min)) + min);
     }
 
 }

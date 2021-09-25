@@ -72,7 +72,9 @@ public class GameService {
                 gameResult.setEqualsCount(((Long) object[1]).intValue());
             }
             gameResult.setTransactionsCount(gameResult.getWinCount() + gameResult.getFailCount() + gameResult.getEqualsCount());
-            if(gameResult.getWinCount() > gameResult.getFailCount()) {
+            if(gameResult.getWinCount() == gameResult.getFailCount()) {
+                gameResult.setFinalStatus(WinningStatus.EQUAL);
+            } else if(gameResult.getWinCount() > gameResult.getFailCount()) {
                 gameResult.setFinalStatus(WinningStatus.WIN);
             } else {
                 gameResult.setFinalStatus(WinningStatus.FAIL);

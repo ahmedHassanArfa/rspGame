@@ -46,8 +46,7 @@ public class GameService {
         game.setId(gameId);
         playTransaction.setGame(game);
         // generate random play to computer
-        Random random = new Random();
-        int randomInt = getRandomNumber(0, 2);
+        int randomInt = getRandomNumber();
         PlayTransactionType computerPlay = PlayTransactionType.values()[randomInt];
         playTransaction.setComputerPlayType(computerPlay);
         // decide the winner
@@ -107,8 +106,8 @@ public class GameService {
         return null;
     }
 
-    public int getRandomNumber(int min, int max) {
-        return (int) ((Math.random() * (max - min)) + min);
+    public int getRandomNumber() {
+        return (int) (Math.random() * (3));
     }
 
 }

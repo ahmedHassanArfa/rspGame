@@ -37,10 +37,10 @@ public class GameService {
     }
 
     @Transactional
-    public PlayTransaction play(PlayTransactionType playTransactionType, Long gameId) {
+    public PlayTransaction play(PlayTransactionType userPlay, Long gameId) {
         PlayTransaction playTransaction = new PlayTransaction();
         playTransaction.setDate(new Date());
-        playTransaction.setUserPlayType(playTransactionType);
+        playTransaction.setUserPlayType(userPlay);
         Game game = new Game();
         game.setId(gameId);
         playTransaction.setGame(game);
@@ -50,11 +50,13 @@ public class GameService {
         PlayTransactionType computerPlay = PlayTransactionType.values()[randomInt];
         playTransaction.setComputerPlayType(computerPlay);
         // decide the winner
-
+        WinningStatus winningStatus = checkUserWinningStatus(userPlay, computerPlay);
+        playTransaction.setWinningStatus(winningStatus);
         playTransaction = playTransactionRepository.save(playTransaction);
         return playTransaction;
     }
 
+    @Transactional
     public GameResult finish(Long gameId) {
         // update game Status to Finished
         gameRepository.updateStatusById(GameStatus.FINISHED, gameId);
@@ -72,9 +74,36 @@ public class GameService {
             gameResult.setTransactionsCount(gameResult.getWinCount() + gameResult.getFailCount() + gameResult.getEqualsCount());
             if(gameResult.getWinCount() > gameResult.getFailCount()) {
                 gameResult.setFinalStatus(WinningStatus.WIN);
+            } else {
+                gameResult.setFinalStatus(WinningStatus.FAIL);
             }
         });
         return gameResult;
+    }
+
+    public WinningStatus checkUserWinningStatus(PlayTransactionType userPlayTransactionType, PlayTransactionType computerPlayTransactionType) {
+        if(userPlayTransactionType.equals(computerPlayTransactionType)) {
+            return WinningStatus.EQUAL;
+        } else if(userPlayTransactionType.equals(PlayTransactionType.ROCK)) {
+            if(computerPlayTransactionType.equals(PlayTransactionType.PAPER)) {
+                return WinningStatus.WIN;
+            } else {
+                return WinningStatus.FAIL;
+            }
+        } else if(userPlayTransactionType.equals(PlayTransactionType.PAPER)) {
+            if(computerPlayTransactionType.equals(PlayTransactionType.SCISSORS)) {
+                return WinningStatus.WIN;
+            } else {
+                return WinningStatus.FAIL;
+            }
+        } else if(userPlayTransactionType.equals(PlayTransactionType.SCISSORS)) {
+            if(computerPlayTransactionType.equals(PlayTransactionType.ROCK)) {
+                return WinningStatus.WIN;
+            } else {
+                return WinningStatus.FAIL;
+            }
+        }
+        return null;
     }
 
 }
